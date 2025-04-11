@@ -8,7 +8,7 @@ version = "0.1.0"
 description = "Ferramenta de contexto para IDEs assistidas por IA"
 readme = "README.md"
 authors = [
-    {name = "Seu Nome", email = "seu.email@exemplo.com"}
+    {name = "Diego Nogueira", email = "devnogueiradiego@gmail.com"}
 ]
 license = {text = "MIT"}
 classifiers = [
@@ -26,11 +26,17 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/seuusuario/context-guide"
-"Bug Tracker" = "https://github.com/seuusuario/context-guide/issues"
+Homepage = "https://github.com/DiegoNogueiraDev/context-guide"
+"Bug Tracker" = "https://github.com/DiegoNogueiraDev/context-guide/issues"
 
 [project.scripts]
 context-guide = "context_guide.cli:main"
 
 [tool.setuptools]
-packages = ["context_guide"] 
+packages = ["context_guide"]
+
+[tool.pytest]
+testpaths = ["tests"]
+python_files = "test_*.py"
+python_classes = "Test*"
+python_functions = "test_*" 

@@ -10,6 +10,9 @@
 - **Atualização automática em tempo real**: Detecta alterações nos arquivos Markdown e atualiza o índice
 - **Geração de prompts enriquecidos**: Consulta automática do contexto relevante antes de gerar código
 - **Fácil integração**: Copia o prompt para a área de transferência para uso no Cursor IDE
+- **Templates completos de documentação**: Guias e modelos para todos os aspectos do desenvolvimento
+- **Acompanhamento do progresso**: Monitoramento de tarefas, módulos e testes
+- **Arquiteturas recomendadas**: Templates para Web, Mobile e Desktop
 
 ## 🛠️ Instalação
 
@@ -35,17 +38,23 @@ pip install -e .
 # Navegue até a pasta do seu projeto
 cd meu-projeto
 
-# Inicialize a estrutura de documentação
+# Para um projeto padrão
 context-guide init
+
+# Para uma estrutura completa com todos os templates
+context-guide init --project-type complete
+
+# Para um projeto específico
+context-guide init --project-type web  # ou mobile, desktop
 ```
 
 ### 2. Atualize os arquivos Markdown com informações do seu projeto
 
 Edite os arquivos criados na pasta `docs/`:
-- `overview.md` - Visão geral do projeto
-- `components.md` - Componentes do sistema
-- `features.md` - Funcionalidades implementadas
-- `architecture.md` - Detalhes técnicos da arquitetura
+- Documentação Básica (ex: `overview.md`, `architecture.md`)
+- Documentos de Acompanhamento (ex: `tracking/tasks.md`, `tracking/modules-status.md`)
+- Guias de Desenvolvimento (ex: `development/api-docs.md`, `development/deployment.md`)
+- Arquiteturas Específicas (ex: `architecture/web-app.md`)
 
 ### 3. Atualize o índice de contexto
 
@@ -71,10 +80,77 @@ context-guide generate "Criar componente ProfileCard com foto e biografia"
 
 O prompt gerado é automaticamente copiado para sua área de transferência. Cole-o diretamente no Cursor IDE para obter código que respeita o contexto do seu projeto.
 
-## 📚 Comandos Disponíveis
+## 📚 Estrutura e Tipos de Projetos
 
-### `context-guide init`
+O Context Guide oferece diferentes modelos de documentação para diversos tipos de projetos:
+
+### Modelos Disponíveis
+
+- **minimal**: Apenas documentos básicos do projeto
+- **standard** (padrão): Documentos básicos + acompanhamento de progresso
+- **complete**: Todos os documentos (básicos, acompanhamento, desenvolvimento)
+- **web**: Modelo completo + template específico para aplicações web
+- **mobile**: Modelo completo + template específico para aplicações mobile
+- **desktop**: Modelo completo + template específico para aplicações desktop
+
+### Estrutura de Documentação
+
+```
+docs/
+├── overview.md               # Visão geral do projeto
+├── architecture.md           # Arquitetura geral
+├── components.md             # Componentes do sistema
+├── features.md               # Funcionalidades
+│
+├── tracking/                 # Acompanhamento de desenvolvimento
+│   ├── tasks.md              # Tarefas e progresso
+│   ├── modules-status.md     # Status dos módulos
+│   └── testing-status.md     # Status dos testes
+│
+├── development/              # Guias de desenvolvimento
+│   ├── api-docs.md           # Documentação da API
+│   ├── best-practices.md     # Melhores práticas
+│   ├── tools-environment.md  # Ferramentas e ambiente
+│   └── deployment.md         # Guia de deployment
+│
+└── architecture/             # Arquiteturas específicas (opcional)
+    ├── web-app.md            # Para aplicações web
+    ├── mobile-app.md         # Para aplicações mobile
+    └── desktop-app.md        # Para aplicações desktop
+```
+
+## 📋 Usando os Templates de Acompanhamento
+
+### Acompanhamento de Tarefas
+
+O arquivo `tracking/tasks.md` foi projetado para manter um registro organizado das tarefas do projeto:
+
+- **Visão Geral do Progresso**: Acompanhe o progresso total
+- **Tarefas Atuais**: Visualize o que está em desenvolvimento agora
+- **Tarefas Concluídas**: Histórico do que foi realizado
+- **Bloqueios e Impedimentos**: Identificação e resolução de obstáculos
+
+### Monitoramento de Módulos
+
+Use `tracking/modules-status.md` para acompanhar o estado de cada componente:
+
+- **Visão Geral**: Estatísticas rápidas sobre os módulos
+- **Status por Módulo**: Detalhes por componente (Frontend, Backend, etc.)
+- **Dependências Externas**: Monitoramento de bibliotecas e serviços
+
+### Status de Testes
+
+O arquivo `tracking/testing-status.md` permite acompanhar a qualidade do código:
+
+- **Sumário de Testes**: Cobertura e resultados gerais
+- **Status por Grupo**: Detalhes por tipo de teste (unitários, integração, etc.)
+- **Falhas Recorrentes**: Identificação de problemas persistentes
+
+## 📦 Comandos Disponíveis
+
+### `context-guide init [--project-type TIPO]`
 Inicializa a estrutura de documentação em um projeto existente.
+Tipos disponíveis: minimal, standard, complete, web, mobile, desktop.
 
 ### `context-guide update`
 Atualiza manualmente o índice de contexto.
@@ -89,15 +165,26 @@ Gera um prompt enriquecido com contexto e copia para a área de transferência.
 - `--docs-dir PASTA` - Especifica a pasta de documentos (padrão: `docs`)
 - `--db-dir PASTA` - Especifica a pasta para o banco de dados (padrão: `.context_guide`)
 
-## 🌟 Fluxo de Trabalho Recomendado
+## 🌟 Fluxo de Trabalho para Desenvolvimento com AI
 
-1. **Documentação do projeto**: Mantenha os arquivos Markdown atualizados com informações sobre componentes, arquitetura e funcionalidades do seu projeto.
+### 1. Configuração Inicial
+- Execute `context-guide init --project-type complete` (ou escolha o tipo que melhor se adapta)
+- Preencha os templates com informações do seu projeto
 
-2. **Iniciar o servidor**: Execute `context-guide serve` em um terminal dedicado para monitorar alterações nos documentos.
+### 2. Acompanhamento Contínuo
+- Mantenha os arquivos de tracking atualizados durante o desenvolvimento
+- Use o arquivo `tracking/tasks.md` para acompanhar o progresso
+- Registre falhas e sucessos em `tracking/modules-status.md` e `tracking/testing-status.md`
 
-3. **Gerar código com contexto**: Quando precisar gerar código no Cursor IDE, use `context-guide generate "sua solicitação"` e cole o prompt resultante no Cursor.
+### 3. Geração de Código com Contexto
+- Execute o servidor de monitoramento: `context-guide serve`
+- Gere prompts para o Cursor IDE: `context-guide generate "sua solicitação"`
+- Use o contexto para corrigir erros: `context-guide generate "corrigir erro no módulo X"`
 
-4. **Iteração contínua**: À medida que o projeto evolui, atualize os arquivos Markdown para manter o contexto preciso.
+### 4. Documentação Evolutiva
+- Atualize a documentação à medida que o projeto cresce
+- Mantenha a arquitetura em sincronia com a implementação
+- Adicione novos componentes e features aos respectivos documentos
 
 ## 🔧 Para Desenvolvedores
 

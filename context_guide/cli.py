@@ -15,6 +15,7 @@ from pathlib import Path
 from context_guide.context import ContextManager
 from context_guide.watcher import FileWatcher
 from context_guide.prompt_generator import PromptGenerator
+from context_guide.project_templates import PROJECT_TEMPLATES
 
 # Configuração de logging
 logging.basicConfig(level=logging.INFO, 
@@ -60,6 +61,12 @@ def parse_arguments():
         "init",
         help="Inicializar estrutura de documentação em um projeto existente"
     )
+    init_parser.add_argument(
+        "--project-type",
+        choices=["minimal", "standard", "complete", "web", "mobile", "desktop"],
+        default="standard",
+        help="Tipo de projeto a ser inicializado (padrão: standard)"
+    )
     
     # Opções globais
     parser.add_argument(
@@ -75,89 +82,101 @@ def parse_arguments():
     
     return parser.parse_args()
 
-def initialize_project(docs_dir):
+def initialize_project(docs_dir, project_type="standard"):
     """
     Inicializa a estrutura de documentação em um projeto existente.
     
     Args:
         docs_dir: Diretório onde os arquivos serão criados
+        project_type: Tipo de estrutura de projeto a criar
     """
     docs_path = Path(docs_dir)
     docs_path.mkdir(exist_ok=True)
     
-    # Criar arquivos de exemplo se não existirem
-    overview_path = docs_path / "overview.md"
-    if not overview_path.exists():
-        with open(overview_path, 'w') as f:
-            f.write("""# Visão Geral do Projeto
-
-Descreva aqui o propósito geral e tecnologias do seu projeto.
-
-## Propósito
-Explique o objetivo principal do projeto.
-
-## Tecnologias Principais
-- Framework principal
-- Linguagem
-- Outras tecnologias importantes
-""")
-        print(f"✅ Criado arquivo {overview_path}")
+    created_files = []
     
-    components_path = docs_path / "components.md"
-    if not components_path.exists():
-        with open(components_path, 'w') as f:
-            f.write("""# Componentes do Projeto
-
-Liste aqui os principais componentes do seu projeto e suas propriedades.
-
-## Componentes de UI
-- **ComponenteA** (`prop1: tipo, prop2: tipo`) - Descrição do componente
-- **ComponenteB** (`prop1: tipo, prop2: tipo`) - Descrição do componente
-
-## Outros Componentes
-- **ComponenteC** (`prop1: tipo, prop2: tipo`) - Descrição do componente
-""")
-        print(f"✅ Criado arquivo {components_path}")
+    # Definir quais grupos de templates serão incluídos com base no tipo de projeto
+    template_groups = []
     
-    features_path = docs_path / "features.md"
-    if not features_path.exists():
-        with open(features_path, 'w') as f:
-            f.write("""# Funcionalidades do Projeto
-
-Liste aqui as principais funcionalidades do seu projeto.
-
-## Funcionalidade A
-- Descrição da funcionalidade
-- Sub-funcionalidades relacionadas
-
-## Funcionalidade B
-- Descrição da funcionalidade
-- Sub-funcionalidades relacionadas
-""")
-        print(f"✅ Criado arquivo {features_path}")
+    if project_type == "minimal":
+        # Incluir apenas os templates básicos essenciais
+        template_groups = ["basic"]
+    elif project_type == "standard":
+        # Incluir templates básicos e de acompanhamento
+        template_groups = ["basic", "tracking"]
+    elif project_type == "complete":
+        # Incluir todos os templates
+        template_groups = ["basic", "tracking", "development"]
+    elif project_type == "web":
+        # Incluir todos os templates mais o específico para web
+        template_groups = ["basic", "tracking", "development"]
+        # Adicionar o template específico para web apps
+        file_path = docs_path / "architecture" / "web-app.md"
+        file_path.parent.mkdir(exist_ok=True)
+        if not file_path.exists():
+            with open(file_path, 'w') as f:
+                f.write(PROJECT_TEMPLATES["app_types"]["web-app.md"])
+            created_files.append(file_path)
+    elif project_type == "mobile":
+        # Incluir todos os templates mais o específico para mobile
+        template_groups = ["basic", "tracking", "development"]
+        # Adicionar o template específico para mobile apps
+        file_path = docs_path / "architecture" / "mobile-app.md"
+        file_path.parent.mkdir(exist_ok=True)
+        if not file_path.exists():
+            with open(file_path, 'w') as f:
+                f.write(PROJECT_TEMPLATES["app_types"]["mobile-app.md"])
+            created_files.append(file_path)
+    elif project_type == "desktop":
+        # Incluir todos os templates mais o específico para desktop
+        template_groups = ["basic", "tracking", "development"]
+        # Adicionar o template específico para desktop apps
+        file_path = docs_path / "architecture" / "desktop-app.md"
+        file_path.parent.mkdir(exist_ok=True)
+        if not file_path.exists():
+            with open(file_path, 'w') as f:
+                f.write(PROJECT_TEMPLATES["app_types"]["desktop-app.md"])
+            created_files.append(file_path)
     
-    architecture_path = docs_path / "architecture.md"
-    if not architecture_path.exists():
-        with open(architecture_path, 'w') as f:
-            f.write("""# Arquitetura do Projeto
-
-Descreva aqui a arquitetura do seu projeto.
-
-## Frontend
-- **Framework**: 
-- **Gerenciamento de Estado**: 
-- **Estilização**: 
-
-## Backend
-- **API**: 
-- **Banco de Dados**: 
-- **Autenticação**: 
-
-## Infraestrutura
-- **Deploy**: 
-- **CI/CD**: 
-""")
-        print(f"✅ Criado arquivo {architecture_path}")
+    # Criar os arquivos de acordo com os grupos selecionados
+    for group in template_groups:
+        if group in PROJECT_TEMPLATES:
+            for filename, content in PROJECT_TEMPLATES[group].items():
+                # Para melhor organização, colocar templates de desenvolvimento em subpasta
+                if group == "development":
+                    file_path = docs_path / "development" / filename
+                    file_path.parent.mkdir(exist_ok=True)
+                elif group == "tracking":
+                    file_path = docs_path / "tracking" / filename
+                    file_path.parent.mkdir(exist_ok=True)
+                else:
+                    file_path = docs_path / filename
+                
+                if not file_path.exists():
+                    with open(file_path, 'w') as f:
+                        f.write(content)
+                    created_files.append(file_path)
+    
+    # Resumo dos arquivos criados
+    print(f"\n🎉 Inicialização concluída! Criados {len(created_files)} arquivos de documentação.")
+    
+    # Mostrar os arquivos criados agrupados por categoria
+    if created_files:
+        print("\nArquivos criados:")
+        
+        categories = {
+            "basic": "Documentação Básica",
+            "tracking": "Acompanhamento de Desenvolvimento",
+            "development": "Guias de Desenvolvimento",
+            "app_types": "Arquitetura Específica"
+        }
+        
+        for category, label in categories.items():
+            category_files = [f for f in created_files if category in str(f)]
+            if category_files:
+                print(f"\n📁 {label}:")
+                for file in category_files:
+                    print(f"  ✅ {file}")
     
     # Adicionar .context_guide ao .gitignore se existir
     gitignore_path = Path('.gitignore')
@@ -168,14 +187,13 @@ Descreva aqui a arquitetura do seu projeto.
         if '.context_guide' not in content:
             with open(gitignore_path, 'a') as f:
                 f.write("\n# Context Guide\n.context_guide/\n")
-            print("✅ Adicionado .context_guide ao .gitignore")
+            print("\n✅ Adicionado .context_guide ao .gitignore")
     
-    print("\n🎉 Inicialização concluída!")
-    print(f"Edite os arquivos em '{docs_dir}/' para refletir os detalhes do seu projeto.")
-    print("\nPróximos passos:")
+    print("\n🚀 Próximos passos:")
     print("1. Atualize os arquivos markdown com informações do seu projeto")
     print("2. Execute 'context-guide update' para indexar os documentos")
     print("3. Use 'context-guide generate \"Sua solicitação\"' para gerar prompts com contexto")
+    print("\n📚 Documentação completa disponível em: https://github.com/seuusuario/context-guide")
 
 def main():
     """Função principal do Context Guide."""
@@ -183,7 +201,8 @@ def main():
     
     # Comando de inicialização
     if args.command == "init":
-        initialize_project(args.docs_dir)
+        project_type = getattr(args, "project_type", "standard")
+        initialize_project(args.docs_dir, project_type)
         return
     
     # Criar instância do gerenciador de contexto

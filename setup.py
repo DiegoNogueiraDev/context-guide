@@ -7,12 +7,12 @@ with open("README.md", "r", encoding="utf-8") as fh:
 setup(
     name="context-guide",
     version="0.1.0",
-    author="Seu Nome",
-    author_email="seu.email@exemplo.com",
+    author="Diego Nogueira",
+    author_email="devnogueiradiego@gmail.com",
     description="Ferramenta de contexto para IDEs assistidas por IA",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/seuusuario/context-guide",
+    url="https://github.com/DiegoNogueiraDev/context-guide",
     packages=find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
@@ -30,6 +30,14 @@ setup(
     entry_points={
         "console_scripts": [
             "context-guide=context_guide.cli:main",
+        ],
+    },
+    extras_require={
+        "dev": [
+            "pytest>=7.0.0",
+            "pytest-cov>=4.0.0",
+            "black>=23.0.0",
+            "flake8>=6.0.0",
         ],
     },
 ) 
