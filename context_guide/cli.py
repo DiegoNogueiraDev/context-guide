@@ -43,6 +43,11 @@ def parse_arguments():
         nargs="+",
         help="Solicitação para gerar código (ex: 'Criar componente ProfileCard')"
     )
+    generate_parser.add_argument(
+        "--technology",
+        choices=["react", "node", "django", "flask", "vue", "spring"],
+        help="Tecnologia específica para contextualização especializada"
+    )
     
     # Comando para iniciar modo servidor (monitoramento)
     server_parser = subparsers.add_parser(
@@ -265,14 +270,25 @@ def main():
         request = " ".join(args.request)
         
         try:
+            # Verificar se há tecnologia especificada
+            technology = getattr(args, "technology", None)
+            if technology:
+                print(f"⚙️ Usando contextualização especializada para: {technology}")
+                # Adicionar contexto de tecnologia à solicitação
+                request_with_tech = f"{request} (technology: {technology})"
+            else:
+                request_with_tech = request
+            
             # Gerar prompt e copiar para área de transferência
-            prompt = prompt_generator.generate_and_copy_to_clipboard(request)
+            prompt = prompt_generator.generate_and_copy_to_clipboard(request_with_tech)
             
             # Exibir resumo do prompt
             print("\n" + "="*50)
             print("✅ Prompt gerado e copiado para área de transferência!")
             print("="*50)
             print(f"Solicitação: {request}")
+            if technology:
+                print(f"Tecnologia: {technology}")
             
             # Oferecer opção para mostrar o prompt completo
             show_full = input("\nMostrar prompt completo? (s/N): ").lower() == 's'

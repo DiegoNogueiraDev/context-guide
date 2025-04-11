@@ -13,21 +13,32 @@
 - **Templates completos de documentação**: Guias e modelos para todos os aspectos do desenvolvimento
 - **Acompanhamento do progresso**: Monitoramento de tarefas, módulos e testes
 - **Arquiteturas recomendadas**: Templates para Web, Mobile e Desktop
+- **Suporte a tecnologias específicas**: Contextualização especializada para frameworks populares
+- **Integração direta com Cursor**: API MCP para envio de contexto diretamente à IDE
 
 ## 🛠️ Instalação
 
 ### Opção 1: Instalação via pip (recomendado)
 
 ```bash
+# Instalação básica
 pip install context-guide
+
+# Instalação com suporte a MCP (recomendado)
+pip install "context-guide[mcp]"
 ```
 
 ### Opção 2: Instalação a partir do código-fonte
 
 ```bash
-git clone https://github.com/seuusuario/context-guide.git
+git clone https://github.com/DiegoNogueiraDev/context-guide.git
 cd context-guide
+
+# Instalação básica
 pip install -e .
+
+# Instalação com suporte a MCP (recomendado)
+pip install -e ".[mcp]"
 ```
 
 ## 🚀 Uso Rápido
@@ -62,23 +73,25 @@ Edite os arquivos criados na pasta `docs/`:
 context-guide update
 ```
 
-### 4. Inicie o servidor de monitoramento (opcional)
+### 4. Escolha seu método de uso
 
-Em um terminal dedicado, execute:
-
+#### Método 1: Via área de transferência
 ```bash
-context-guide serve
-```
-
-### 5. Gere prompts com contexto
-
-```bash
+# Gerar prompt e copiá-lo para a área de transferência
 context-guide generate "Criar componente ProfileCard com foto e biografia"
+
+# Especificar tecnologia para contextualização especializada
+context-guide generate "Criar componente ProfileCard com foto e biografia" --technology react
 ```
 
-### 6. Cole o prompt no Cursor IDE
+#### Método 2: Via servidor MCP (integração direta)
+```bash
+# Iniciar o servidor MCP
+context-guide mcp
 
-O prompt gerado é automaticamente copiado para sua área de transferência. Cole-o diretamente no Cursor IDE para obter código que respeita o contexto do seu projeto.
+# Em outro terminal ou via API, enviar solicitações para o servidor MCP
+# (Ver seção "Integração com o Cursor IDE via MCP")
+```
 
 ## 📚 Estrutura e Tipos de Projetos
 
@@ -119,7 +132,30 @@ docs/
     └── desktop-app.md        # Para aplicações desktop
 ```
 
-## 📋 Usando os Templates de Acompanhamento
+## 🧩 Tecnologias Suportadas
+
+O Context Guide oferece suporte especializado para as seguintes tecnologias e frameworks:
+
+| Tecnologia | Descrição | Exemplo de uso |
+|------------|-----------|----------------|
+| React | Biblioteca JavaScript para UIs | `--technology react` |
+| Node.js | Ambiente JavaScript para servidor | `--technology node` |
+| Django | Framework web Python de alto nível | `--technology django` |
+| Flask | Microframework web Python | `--technology flask` |
+| Vue.js | Framework JavaScript progressivo | `--technology vue` |
+| Spring | Framework Java para desenvolvimento | `--technology spring` |
+
+Ao especificar a tecnologia, o Context Guide enriquecerá o contexto com:
+- Descrição e propósito da tecnologia
+- Padrões comuns e melhores práticas
+- Convenções de código e estruturas típicas
+
+```bash
+# Exemplo de uso
+context-guide generate "Criar componente de navegação responsivo" --technology react
+```
+
+## 📝 Usando os Templates de Acompanhamento
 
 ### Acompanhamento de Tarefas
 
@@ -164,16 +200,19 @@ Inicia o servidor MCP (Model Control Panel) para integração com o Cursor IDE.
 - `--port` - Porta para o servidor (padrão: 8000)
 - `--reload` - Ativa o recarregamento automático durante desenvolvimento
 
-### `context-guide generate "Solicitação aqui"`
+### `context-guide generate "Solicitação aqui" [--technology TECH]`
 Gera um prompt enriquecido com contexto e copia para a área de transferência.
+- `--technology` - Tecnologia específica para contextualização especializada (react, node, django, flask, vue, spring)
 
 ### Opções globais
 - `--docs-dir PASTA` - Especifica a pasta de documentos (padrão: `docs`)
 - `--db-dir PASTA` - Especifica a pasta para o banco de dados (padrão: `.context_guide`)
+- `--log-level NÍVEL` - Define o nível de logging (INFO, DEBUG, WARNING, ERROR)
+- `--log-file ARQUIVO` - Define o arquivo para gravação de logs
 
 ## 🔌 Integração com o Cursor IDE via MCP
 
-O Context Guide agora oferece integração direta com o Cursor IDE através do MCP (Model Control Panel), permitindo consultas de contexto diretamente da IDE.
+O Context Guide oferece integração direta com o Cursor IDE através do MCP (Model Control Panel), permitindo consultas de contexto diretamente da IDE.
 
 ### Instalação das dependências do MCP
 
@@ -185,6 +224,28 @@ pip install "context-guide[mcp]"
 pip install fastapi uvicorn pydantic requests
 ```
 
+### Configuração do Token de API do Cursor
+
+1. Abra o Cursor IDE
+2. Acesse **Configurações → Geral → API**
+3. Clique em **Gerar novo token**
+4. Copie o token gerado
+5. Configure a variável de ambiente:
+
+```bash
+# Linux/macOS
+export CURSOR_API_TOKEN="seu-token-aqui"
+
+# Windows (CMD)
+set CURSOR_API_TOKEN=seu-token-aqui
+
+# Windows (PowerShell)
+$env:CURSOR_API_TOKEN="seu-token-aqui"
+
+# Para tornar permanente, adicione ao seu arquivo de perfil (.bashrc, .zshrc, etc.)
+echo 'export CURSOR_API_TOKEN="seu-token-aqui"' >> ~/.bashrc
+```
+
 ### Iniciando o servidor MCP
 
 ```bash
@@ -193,32 +254,35 @@ context-guide mcp
 
 # Personalizar host e porta
 context-guide mcp --host 127.0.0.1 --port 8080
+
+# Modo de desenvolvimento com recarregamento automático
+context-guide mcp --reload
 ```
 
-### Configuração da integração com o Cursor IDE
+### Endpoints da API MCP
 
-1. Obtenha um token de API do Cursor (acessível nas configurações da IDE)
-2. Configure a variável de ambiente `CURSOR_API_TOKEN` com seu token
-3. Use a API do servidor MCP para consultar contexto:
+| Endpoint | Método | Descrição | Exemplo de payload |
+|----------|--------|-----------|-------------------|
+| `/` | GET | Verificar status do servidor | - |
+| `/context` | POST | Obter contexto para uma consulta | `{"query": "Como implementar autenticação?", "num_results": 5, "technology_context": "node"}` |
+| `/prompt` | POST | Gerar prompt completo | `{"request": "Criar componente de login", "technology_context": "react", "include_best_practices": true}` |
+| `/update-index` | POST | Atualizar índice de documentos | - |
+| `/stats` | GET | Obter estatísticas do servidor | - |
+| `/health` | GET | Verificar saúde do servidor | - |
+
+### Exemplo de uso via curl
 
 ```bash
-# Enviar consulta para o servidor MCP
+# Obter contexto
 curl -X POST http://localhost:8000/context \
   -H "Content-Type: application/json" \
-  -d '{"query": "Como implementar autenticação no projeto?"}'
+  -d '{"query": "Como implementar autenticação?", "technology_context": "node"}'
 
-# Gerar prompt completo
+# Gerar prompt
 curl -X POST http://localhost:8000/prompt \
   -H "Content-Type: application/json" \
-  -d '{"request": "Criar componente de login"}'
+  -d '{"request": "Criar componente de login", "technology_context": "react"}'
 ```
-
-### Endpoints disponíveis no servidor MCP
-
-- `GET /` - Verificar status do servidor
-- `POST /context` - Obter contexto relevante para uma consulta
-- `POST /prompt` - Gerar prompt completo para uma solicitação
-- `POST /update-index` - Atualizar índice de documentos
 
 ### Exemplo de utilização programática
 
@@ -228,13 +292,19 @@ from context_guide.mcp_server.cursor_integration import CursorIntegration
 # Inicializar integração (certifique-se que o servidor MCP está rodando)
 cursor = CursorIntegration(mcp_url="http://localhost:8000")
 
-# Enviar contexto diretamente para o Cursor IDE
-query = "Como implementar autenticação no projeto?"
-context_data = cursor.get_context_for_query(query)
-cursor.send_context_to_cursor(context_data["context"])
-
-# Ou melhorar um prompt diretamente
-cursor.enhance_cursor_prompt("Criar novo componente de login com validação")
+# Verificar se o servidor está saudável
+if cursor.check_server_health():
+    # Enviar contexto diretamente para o Cursor IDE
+    query = "Como implementar autenticação JWT?"
+    context_data = cursor.get_context_for_query(query, technology="node")
+    cursor.send_context_to_cursor(context_data["context"], technology="node")
+    
+    # Ou melhorar um prompt diretamente
+    cursor.enhance_cursor_prompt(
+        "Criar componente de login com validação",
+        technology="react",
+        include_best_practices=True
+    )
 ```
 
 ## 🌟 Fluxo de Trabalho para Desenvolvimento com AI
@@ -250,7 +320,7 @@ cursor.enhance_cursor_prompt("Criar novo componente de login com validação")
 
 ### 3. Geração de Código com Contexto (usando área de transferência)
 - Execute o servidor de monitoramento: `context-guide serve`
-- Gere prompts para o Cursor IDE: `context-guide generate "sua solicitação"`
+- Gere prompts para o Cursor IDE: `context-guide generate "sua solicitação" --technology TECH`
 - Use o contexto para corrigir erros: `context-guide generate "corrigir erro no módulo X"`
 
 ### 4. Geração de Código com Contexto (usando MCP)
@@ -269,7 +339,7 @@ cursor.enhance_cursor_prompt("Criar novo componente de login com validação")
 
 ```bash
 # Clone o repositório
-git clone https://github.com/seuusuario/context-guide.git
+git clone https://github.com/DiegoNogueiraDev/context-guide.git
 cd context-guide
 
 # Crie um ambiente virtual
@@ -278,7 +348,17 @@ source venv/bin/activate  # Linux/macOS
 venv\Scripts\activate     # Windows
 
 # Instale em modo de desenvolvimento
-pip install -e .
+pip install -e ".[dev,mcp]"
+```
+
+### Executando testes
+
+```bash
+# Executar todos os testes
+pytest
+
+# Executar com cobertura
+pytest --cov=context_guide
 ```
 
 ### Empacotamento para distribuição
@@ -299,6 +379,7 @@ python -m twine upload dist/*
 - O sistema utiliza apenas embeddings locais para melhor desempenho e privacidade
 - Recomenda-se manter os documentos Markdown concisos e bem organizados para facilitar a recuperação de contexto
 - O banco de dados é armazenado localmente em `.context_guide/` (já configurado para ser ignorado pelo Git)
+- Para projetos em equipe, considere hospedar o servidor MCP em um ambiente compartilhado
 
 ## 📄 Licença
 

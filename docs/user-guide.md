@@ -1,183 +1,364 @@
-# Guia de Usuário - Context Guide
-
-Este guia mostra como aproveitar ao máximo o Context Guide para gerenciar o desenvolvimento de aplicações complexas com o auxílio de IAs.
+# Guia do Usuário do Context Guide
 
 ## Introdução
 
-O Context Guide é uma ferramenta que resolve um dos principais problemas no desenvolvimento assistido por IA: a falta de contexto. Ao fornecer documentação estruturada e mecanismos para acompanhar o progresso, o Context Guide permite que as IAs compreendam melhor seu projeto e gerem código mais relevante e integrado.
+O Context Guide é uma ferramenta inovadora projetada para melhorar drasticamente a experiência de desenvolvimento com IDEs assistidas por IA, como o Cursor. Ao fornecer contexto rico e específico do projeto para os modelos de IA, o Context Guide ajuda a obter respostas mais precisas e alinhadas com a base de código de seu projeto.
 
-## Como Funciona
+## Por que usar o Context Guide?
 
-1. **Documentação Centralizada**: Toda a documentação é mantida em arquivos Markdown no diretório `docs/`
-2. **Indexação por Embeddings**: Os arquivos são processados e indexados usando técnicas de RAG (Retrieval Augmented Generation)
-3. **Geração de Prompts Contextualizados**: Quando você solicita algo, o Context Guide busca informações relevantes e gera um prompt otimizado
-4. **Monitoramento em Tempo Real**: As alterações na documentação são detectadas e o índice é atualizado automaticamente
+As IDEs assistidas por IA frequentemente sofrem de:
 
-## Configuração Inicial
+1. **Falta de contexto específico do projeto** - A IA não conhece automaticamente a arquitetura, padrões e convenções do seu projeto
+2. **Janela de contexto limitada** - Os modelos têm limite de tokens, não podendo processar toda a base de código
+3. **Alucinações e inconsistências** - Respostas genéricas que não se alinham com o código existente
 
-### Escolhendo o Tipo de Projeto
+O Context Guide resolve esses problemas ao:
 
-O Context Guide oferece diferentes níveis de documentação dependendo da complexidade do seu projeto:
+- Manter um índice pesquisável da documentação do projeto
+- Recuperar automaticamente informações relevantes para suas solicitações
+- Formatar prompts enriquecidos que fornecem o contexto exato necessário
+
+## Instalação
+
+### Requisitos
+
+- Python 3.9 ou superior
+- Pip (gerenciador de pacotes Python)
+- Acesso ao Cursor IDE (opcional, para integração completa)
+
+### Procedimento de Instalação
 
 ```bash
-# Projeto mínimo - apenas documentação básica
-context-guide init --project-type minimal
+# Instalação básica
+pip install context-guide
 
-# Projeto padrão - documentação básica + acompanhamento
-context-guide init --project-type standard
-
-# Projeto completo - todos os documentos
-context-guide init --project-type complete
-
-# Projetos específicos - web, mobile, desktop
-context-guide init --project-type web
-context-guide init --project-type mobile
-context-guide init --project-type desktop
+# Instalação com suporte a MCP (recomendado)
+pip install "context-guide[mcp]"
 ```
 
-### Preenchendo os Templates
+Para verificar a instalação:
 
-Após a inicialização, você terá vários arquivos Markdown que devem ser preenchidos com informações específicas do seu projeto. É importante dedicar tempo para preencher estes templates de forma completa e precisa.
+```bash
+context-guide --help
+```
 
-#### Documentos Básicos
+## Primeiros Passos
 
-| Arquivo | Conteúdo Recomendado |
-|---------|----------------------|
-| `overview.md` | Propósito, tecnologias, status atual e estrutura organizacional |
-| `architecture.md` | Arquitetura geral, frontend, backend, banco de dados, infraestrutura |
-| `components.md` | Componentes de UI, serviços de backend, modelos de dados |
-| `features.md` | Funcionalidades implementadas e planejadas, roadmap |
+### Inicialização do Projeto
 
-#### Documentos de Acompanhamento
+O primeiro passo é inicializar a estrutura de documentação:
 
-| Arquivo | Conteúdo Recomendado |
-|---------|----------------------|
-| `tracking/tasks.md` | Tarefas atuais, concluídas, bloqueios e impedimentos |
-| `tracking/modules-status.md` | Status de cada módulo, problemas conhecidos, dependências |
-| `tracking/testing-status.md` | Resultados de testes, falhas recorrentes, cobertura |
+```bash
+# Navegue até a raiz do seu projeto
+cd seu-projeto
 
-#### Guias de Desenvolvimento
+# Inicialize a estrutura básica de documentação
+context-guide init
+```
 
-| Arquivo | Conteúdo Recomendado |
-|---------|----------------------|
-| `development/api-docs.md` | Endpoints, parâmetros, autenticação, modelos de dados |
-| `development/best-practices.md` | Padrões de código, arquitetura, segurança, testes |
-| `development/tools-environment.md` | Setup do ambiente, ferramentas, IDEs recomendadas |
-| `development/deployment.md` | Procedimentos de deploy, monitoramento, rollback |
+Este comando criará uma pasta `docs/` com vários arquivos Markdown que servirão como fonte de verdade para o Context Guide.
 
-## Manutenção da Documentação
+### Tipos de Projeto
 
-### Atualização Regular
+Escolha o tipo de projeto que melhor se adapta às suas necessidades:
 
-Para obter melhores resultados, mantenha a documentação atualizada à medida que o projeto evolui:
+```bash
+# Para um projeto web
+context-guide init --project-type web
 
-1. **Adicione componentes**: Ao criar novos componentes, adicione-os ao `components.md`
-2. **Atualize status**: Mantenha os documentos de tracking atualizados com o progresso real
-3. **Registre mudanças arquiteturais**: Documente alterações importantes na arquitetura
-4. **Monitore testes**: Atualize o status dos testes quando adicionados ou quando falham
+# Para um projeto mobile
+context-guide init --project-type mobile
 
-### Servidor de Monitoramento
+# Para um projeto desktop
+context-guide init --project-type desktop
 
-Para facilitar a atualização automática do índice, execute o servidor de monitoramento:
+# Para documentação mínima
+context-guide init --project-type minimal
+
+# Para documentação completa
+context-guide init --project-type complete
+```
+
+### Preenchendo a Documentação
+
+Após a inicialização, você deve editar os arquivos Markdown gerados para adicionar informações específicas do seu projeto. Concentre-se inicialmente nos seguintes arquivos:
+
+1. `docs/overview.md` - Visão geral, propósito e tecnologias do projeto
+2. `docs/architecture.md` - Arquitetura, padrões de design e estrutura
+3. `docs/components.md` - Componentes principais e suas responsabilidades
+4. `docs/features.md` - Funcionalidades e requisitos implementados
+
+Exemplo de `overview.md` bem preenchido:
+
+```markdown
+# Visão Geral do Projeto
+
+## Propósito
+Este projeto é um sistema de gerenciamento de biblioteca que permite aos usuários pesquisar, emprestar e devolver livros. O sistema também oferece funcionalidades administrativas para gerenciar o acervo.
+
+## Tecnologias Principais
+- Frontend: React com TypeScript e Material UI
+- Backend: Node.js com Express e TypeScript
+- Banco de dados: PostgreSQL com Prisma ORM
+- Autenticação: JWT com refresh tokens
+
+## Arquitetura Geral
+O sistema segue uma arquitetura de microserviços, com serviços separados para:
+- Autenticação e gerenciamento de usuários
+- Catálogo de livros
+- Empréstimos e devoluções
+- Notificações
+```
+
+### Criando o Índice
+
+Depois de preencher a documentação, crie o índice:
+
+```bash
+context-guide update
+```
+
+Este comando processará todos os arquivos Markdown em `docs/` e criará um índice pesquisável que será usado para recuperar informações contextuais.
+
+## Uso Diário
+
+### Monitoramento Automático
+
+Para manter o índice atualizado enquanto você trabalha na documentação:
 
 ```bash
 context-guide serve
 ```
 
-Este servidor detectará alterações nos arquivos Markdown e atualizará o índice automaticamente.
+Este comando inicia um servidor que monitora alterações nos arquivos Markdown e atualiza o índice automaticamente.
 
-## Geração de Prompts
+### Gerando Prompts Enriquecidos
 
-### Boas Práticas de Solicitação
-
-Para obter os melhores resultados, siga estas dicas ao solicitar prompts:
-
-1. **Seja específico**: "Adicionar botão de cancelamento ao componente CheckoutForm" é melhor que "Adicionar botão"
-2. **Mencione componentes existentes**: Referir a componentes documentados melhora o contexto
-3. **Solicite correções específicas**: Para erros, mencione o módulo e o tipo de erro
-
-### Exemplos de Solicitações Eficazes
+Quando precisar gerar código com o Cursor IDE:
 
 ```bash
-# Solicitar novos componentes
-context-guide generate "Criar componente UserAvatar que exibe a foto do usuário com opção de edição"
+# Formato básico
+context-guide generate "Criar componente de formulário de login"
 
-# Integrar componentes existentes
-context-guide generate "Integrar o componente PaymentForm no fluxo de checkout"
-
-# Corrigir problemas
-context-guide generate "Corrigir o erro de validação no formulário de cadastro"
-
-# Implementar funcionalidades
-context-guide generate "Implementar autenticação com Google OAuth conforme especificado na arquitetura"
+# Com contexto tecnológico específico
+context-guide generate "Criar componente de formulário de login" --technology react
 ```
 
-## Fluxo de Trabalho com Agentes IA
+O prompt gerado será copiado para a área de transferência. Cole-o diretamente no Cursor IDE para obter código que respeita o contexto do seu projeto.
 
-### Preparação para Projetos Complexos
+## Integração Avançada com o Cursor IDE via MCP
 
-Para projetos complexos ou com vários desenvolvedores (incluindo agentes IA):
+Para uma experiência mais integrada, o Context Guide oferece o servidor MCP (Model Control Panel) que pode se comunicar diretamente com o Cursor IDE.
 
-1. **Documentação inicial detalhada**: Dedique tempo para documentar a visão do projeto
-2. **Divida em módulos claros**: Defina claramente os limites entre componentes
-3. **Estabeleça padrões**: Documente convenções de código e arquitetura
-4. **Use tracking estruturado**: Mantenha o status de módulos e tarefas atualizado
+### Configuração do Servidor MCP
 
-### Trabalhando com Múltiplos Agentes
+```bash
+# Iniciar o servidor MCP na porta padrão (8000)
+context-guide mcp
 
-Quando trabalhar com vários agentes IA:
+# Personalizar host e porta
+context-guide mcp --host 127.0.0.1 --port 8080 --reload
+```
 
-1. **Contexto específico**: Forneça a cada agente apenas o contexto relevante para sua tarefa
-2. **Atualize após cada interação**: Documente as mudanças após cada sessão de código
-3. **Mantenha o tracking centralizado**: Use o arquivo de tarefas como fonte única de verdade
-4. **Registre decisões**: Documente decisões arquiteturais importantes
+### Configurando a Integração com o Cursor
 
-## Tipos Específicos de Projetos
+1. Obtenha um token de API do Cursor IDE:
+   - Abra o Cursor IDE
+   - Vá para Configurações (ícone de engrenagem)
+   - Navegue até a seção API
+   - Gere um novo token de API
+   - Copie o token gerado
 
-### Aplicações Web
+2. Configure a variável de ambiente:
 
-Para projetos web, concentre-se em:
+```bash
+# Linux/macOS
+export CURSOR_API_TOKEN="seu-token-aqui"
 
-- **Arquitetura frontend**: Detalhe componentes, estado, rotas
-- **API e comunicação**: Documente endpoints e formatos
-- **Responsividade**: Especifique comportamento em diferentes dispositivos
+# Windows (PowerShell)
+$env:CURSOR_API_TOKEN="seu-token-aqui"
+```
 
-### Aplicações Mobile
+3. Verifique a configuração:
 
-Para projetos mobile, priorize:
+```bash
+# Este comando deve retornar "Servidor MCP está saudável" se tudo estiver configurado corretamente
+curl http://localhost:8000/health
+```
 
-- **Plataformas suportadas**: Documente particularidades de iOS/Android
-- **Navegação**: Detalhe o fluxo de navegação entre telas
-- **Recursos nativos**: Especifique permissões e integração com hardware
+### Usando a API
 
-### Aplicações Desktop
+Uma vez que o servidor MCP esteja em execução, você pode interagir com ele via API:
 
-Para projetos desktop, foque em:
+#### Obter Contexto para uma Consulta
 
-- **Multi-plataforma**: Especifique diferenças entre Windows/macOS/Linux
-- **Instalação e updates**: Documente o processo de deployment
-- **Integração com o sistema**: Detalhe interação com o sistema operacional
+```bash
+curl -X POST http://localhost:8000/context \
+  -H "Content-Type: application/json" \
+  -d '{"query": "Como implementar o login?", "technology_context": "node"}'
+```
 
-## Resolução de Problemas
+#### Gerar um Prompt Enriquecido
 
-### Problemas Comuns
+```bash
+curl -X POST http://localhost:8000/prompt \
+  -H "Content-Type: application/json" \
+  -d '{"request": "Implementar middleware de autenticação", "technology_context": "node"}'
+```
 
-| Problema | Solução |
-|----------|---------|
-| Contexto incorreto recuperado | Verifique se a documentação relevante está atualizada e clara |
-| Falha na atualização do índice | Reinicie o servidor com `context-guide serve` |
-| Perda de contexto entre comandos | Atualize a documentação após cada alteração significativa |
-| Prompts muito genéricos | Seja mais específico e refira-se a componentes existentes |
+#### Enviar Contexto Diretamente para o Cursor
 
-### Dicas para Melhorar o Contexto
+Para isso, você precisará usar a biblioteca Python:
 
-1. **Use termos consistentes**: Mantenha nomes de componentes e conceitos uniformes
-2. **Estruture bem os documentos**: Use cabeçalhos, listas e tabelas para organizar informações
-3. **Priorize qualidade sobre quantidade**: Documentação concisa e específica é melhor que texto extenso
-4. **Atualize após cada sessão**: Documente as alterações feitas imediatamente
+```python
+from context_guide.mcp_server.cursor_integration import CursorIntegration
+
+# Inicializar a integração
+cursor = CursorIntegration()
+
+# Enviar um prompt enriquecido para o Cursor
+cursor.enhance_cursor_prompt("Criar componente de tabela de dados", technology="react")
+```
+
+## Trabalhando com Tecnologias Específicas
+
+O Context Guide oferece suporte otimizado para diversas tecnologias, enriquecendo o contexto com informações específicas para cada stack.
+
+### React
+
+```bash
+context-guide generate "Criar componente Card reutilizável" --technology react
+```
+
+Isso enriquecerá o prompt com informações sobre:
+- Componentes funcionais e hooks
+- Padrões de estado e props
+- Melhores práticas de React
+
+### Node.js
+
+```bash
+context-guide generate "Implementar middleware de autenticação" --technology node
+```
+
+O contexto incluirá:
+- Padrões de middleware
+- Estruturação de rotas e controladores
+- Melhores práticas para Express/Node
+
+### Django
+
+```bash
+context-guide generate "Criar modelo para gerenciamento de usuários" --technology django
+```
+
+Enriquecido com:
+- Padrão MVT (Model-View-Template)
+- Uso apropriado de models e forms
+- Integração com o Django Admin
+
+### Flask
+
+```bash
+context-guide generate "Implementar blueprint para API REST" --technology flask
+```
+
+### Vue.js
+
+```bash
+context-guide generate "Criar componente de navegação" --technology vue
+```
+
+### Spring Boot
+
+```bash
+context-guide generate "Criar controlador REST" --technology spring
+```
+
+## Organização da Documentação
+
+Para projetos maiores, recomendamos organizar a documentação por domínios:
+
+```
+docs/
+├── core/
+│   ├── overview.md
+│   └── architecture.md
+├── frontend/
+│   ├── components.md
+│   └── styling-guide.md
+├── backend/
+│   ├── api.md
+│   └── database-schema.md
+├── dev-ops/
+│   ├── deployment.md
+│   └── monitoring.md
+└── tracking/
+    ├── tasks.md
+    └── modules-status.md
+```
+
+O Context Guide processará automaticamente toda a estrutura de arquivos.
+
+## Fluxo de Trabalho em Equipe
+
+Para equipes, recomendamos:
+
+1. **Incluir a documentação no controle de versão**: Adicione a pasta `docs/` ao Git
+2. **Excluir o banco de dados do controle de versão**: Adicione `.context_guide/` ao `.gitignore`
+3. **Automatizar atualizações**: Execute `context-guide update` após pulls ou merges
+4. **Servidor MCP compartilhado**: Configure um servidor MCP em um ambiente compartilhado
+5. **Revisão de documentação**: Inclua a documentação no processo de code review
+
+## Solução de Problemas
+
+### O prompt gerado não inclui o contexto esperado
+
+**Possível causa**: A documentação não contém as informações necessárias ou não está indexada.
+
+**Solução**:
+1. Verifique se a documentação relevante existe e está detalhada
+2. Execute `context-guide update` para reindexar
+3. Torne sua consulta mais específica
+
+### Erro ao iniciar o servidor MCP
+
+**Possível causa**: Dependências não instaladas.
+
+**Solução**:
+```bash
+pip install "context-guide[mcp]"
+```
+
+### Falha na integração com o Cursor IDE
+
+**Possível causa**: Token de API incorreto ou não configurado.
+
+**Solução**:
+1. Verifique se o token está configurado corretamente
+2. Teste a conexão com `curl http://localhost:8000/health`
+3. Verifique os logs do servidor MCP
+
+## Dicas e Truques
+
+### Prompts Eficazes
+
+Para obter melhores resultados:
+
+1. **Seja específico**: "Criar componente de tabela com paginação e filtros" é melhor que "Fazer componente de tabela"
+2. **Mencione padrões**: "Seguindo o padrão repositório" ajuda a gerar código consistente
+3. **Especifique a tecnologia**: Use a opção `--technology` para contexto mais preciso
+
+### Otimização de Desempenho
+
+Para projetos grandes:
+
+1. **Divida a documentação**: Use uma estrutura hierárquica para organizar documentos
+2. **Seja conciso**: Prefira documentação específica e focada em vez de textos longos
+3. **Atualize seletivamente**: Use `context-guide update --docs-dir subpasta` para atualizar apenas seções específicas
 
 ## Conclusão
 
-O Context Guide é uma ferramenta poderosa para desenvolvimento assistido por IA, mas sua eficácia depende da qualidade da documentação mantida. Invista tempo na configuração inicial e mantenha a documentação atualizada para obter os melhores resultados.
+O Context Guide transforma sua experiência com IDEs assistidas por IA, fornecendo contexto rico e específico do projeto. Ao manter uma documentação de qualidade e usar os prompts gerados, você obterá código mais alinhado com a arquitetura, padrões e convenções do seu projeto, economizando tempo e reduzindo frustrações com respostas genéricas ou incorretas.
 
-Lembre-se: a IA só é tão boa quanto o contexto que você fornece. Com documentação de qualidade, você pode transformar solicitações simples em código que se integra perfeitamente ao seu projeto. 
+Explore recursos adicionais e contribua para o projeto em [GitHub](https://github.com/DiegoNogueiraDev/context-guide). 
