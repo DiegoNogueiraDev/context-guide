@@ -158,12 +158,67 @@ Atualiza manualmente o índice de contexto.
 ### `context-guide serve`
 Inicia um servidor que monitora alterações nos arquivos Markdown e atualiza automaticamente o índice.
 
+### `context-guide mcp [--host HOST] [--port PORTA] [--reload]`
+Inicia o servidor MCP (Model Control Panel) para integração com o Cursor IDE.
+- `--host` - Endereço para o servidor (padrão: 0.0.0.0)
+- `--port` - Porta para o servidor (padrão: 8000)
+- `--reload` - Ativa o recarregamento automático durante desenvolvimento
+
 ### `context-guide generate "Solicitação aqui"`
 Gera um prompt enriquecido com contexto e copia para a área de transferência.
 
 ### Opções globais
 - `--docs-dir PASTA` - Especifica a pasta de documentos (padrão: `docs`)
 - `--db-dir PASTA` - Especifica a pasta para o banco de dados (padrão: `.context_guide`)
+
+## 🔌 Integração com o Cursor IDE via MCP
+
+O Context Guide agora oferece integração direta com o Cursor IDE através do MCP (Model Control Panel), permitindo consultas de contexto diretamente da IDE.
+
+### Instalação das dependências do MCP
+
+```bash
+# Instalar o Context Guide com suporte a MCP
+pip install "context-guide[mcp]"
+
+# Ou, se já instalou, adicione as dependências
+pip install fastapi uvicorn pydantic requests
+```
+
+### Iniciando o servidor MCP
+
+```bash
+# Iniciar o servidor MCP na porta padrão (8000)
+context-guide mcp
+
+# Personalizar host e porta
+context-guide mcp --host 127.0.0.1 --port 8080
+```
+
+### Configuração da integração com o Cursor IDE
+
+1. Obtenha um token de API do Cursor (acessível nas configurações da IDE)
+2. Configure a variável de ambiente `CURSOR_API_TOKEN` com seu token
+3. Use a API do servidor MCP para consultar contexto:
+
+```bash
+# Enviar consulta para o servidor MCP
+curl -X POST http://localhost:8000/context \
+  -H "Content-Type: application/json" \
+  -d '{"query": "Como implementar autenticação no projeto?"}'
+
+# Gerar prompt completo
+curl -X POST http://localhost:8000/prompt \
+  -H "Content-Type: application/json" \
+  -d '{"request": "Criar componente de login"}'
+```
+
+### Endpoints disponíveis no servidor MCP
+
+- `GET /` - Verificar status do servidor
+- `POST /context` - Obter contexto relevante para uma consulta
+- `POST /prompt` - Gerar prompt completo para uma solicitação
+- `POST /update-index` - Atualizar índice de documentos
 
 ## 🌟 Fluxo de Trabalho para Desenvolvimento com AI
 
