@@ -220,6 +220,23 @@ curl -X POST http://localhost:8000/prompt \
 - `POST /prompt` - Gerar prompt completo para uma solicitação
 - `POST /update-index` - Atualizar índice de documentos
 
+### Exemplo de utilização programática
+
+```python
+from context_guide.mcp_server.cursor_integration import CursorIntegration
+
+# Inicializar integração (certifique-se que o servidor MCP está rodando)
+cursor = CursorIntegration(mcp_url="http://localhost:8000")
+
+# Enviar contexto diretamente para o Cursor IDE
+query = "Como implementar autenticação no projeto?"
+context_data = cursor.get_context_for_query(query)
+cursor.send_context_to_cursor(context_data["context"])
+
+# Ou melhorar um prompt diretamente
+cursor.enhance_cursor_prompt("Criar novo componente de login com validação")
+```
+
 ## 🌟 Fluxo de Trabalho para Desenvolvimento com AI
 
 ### 1. Configuração Inicial
@@ -231,12 +248,17 @@ curl -X POST http://localhost:8000/prompt \
 - Use o arquivo `tracking/tasks.md` para acompanhar o progresso
 - Registre falhas e sucessos em `tracking/modules-status.md` e `tracking/testing-status.md`
 
-### 3. Geração de Código com Contexto
+### 3. Geração de Código com Contexto (usando área de transferência)
 - Execute o servidor de monitoramento: `context-guide serve`
 - Gere prompts para o Cursor IDE: `context-guide generate "sua solicitação"`
 - Use o contexto para corrigir erros: `context-guide generate "corrigir erro no módulo X"`
 
-### 4. Documentação Evolutiva
+### 4. Geração de Código com Contexto (usando MCP)
+- Inicie o servidor MCP: `context-guide mcp`
+- Configure o token de API do Cursor: `export CURSOR_API_TOKEN="seu-token-aqui"`
+- Use a integração programática ou os endpoints API para enviar contexto diretamente ao Cursor
+
+### 5. Documentação Evolutiva
 - Atualize a documentação à medida que o projeto cresce
 - Mantenha a arquitetura em sincronia com a implementação
 - Adicione novos componentes e features aos respectivos documentos
