@@ -1,0 +1,33 @@
+# Start Generation Here
+# Ignorar arquivos de compilação
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Ignorar arquivos de ambiente virtual
+venv/
+env/
+ENV/
+.venv/
+.env
+
+# Ignorar arquivos de configuração do IDE
+.idea/
+.vscode/
+*.sublime-workspace
+*.sublime-project
+
+# Ignorar arquivos de log
+*.log
+
+# Ignorar arquivos de sistema
+.DS_Store
+Thumbs.db
+
+# Ignorar arquivos de dependências
+*.egg-info/
+*.egg
+dist/
+build/
+# End Generation Here
