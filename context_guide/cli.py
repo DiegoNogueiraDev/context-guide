@@ -50,6 +50,28 @@ def parse_arguments():
         help="Iniciar modo servidor para monitorar alterações nos documentos"
     )
     
+    # Comando para iniciar servidor MCP
+    mcp_parser = subparsers.add_parser(
+        "mcp",
+        help="Iniciar servidor MCP para integração com Cursor IDE"
+    )
+    mcp_parser.add_argument(
+        "--host",
+        default="0.0.0.0",
+        help="Host para o servidor MCP (padrão: 0.0.0.0)"
+    )
+    mcp_parser.add_argument(
+        "--port",
+        type=int,
+        default=8000,
+        help="Porta para o servidor MCP (padrão: 8000)"
+    )
+    mcp_parser.add_argument(
+        "--reload",
+        action="store_true",
+        help="Ativa o reload automático durante desenvolvimento"
+    )
+    
     # Comando para atualizar índice
     update_parser = subparsers.add_parser(
         "update", 
@@ -205,6 +227,30 @@ def main():
         initialize_project(args.docs_dir, project_type)
         return
     
+    # Comando para iniciar servidor MCP
+    if args.command == "mcp":
+        print(f"🚀 Iniciando servidor MCP em {args.host}:{args.port}...")
+        
+        try:
+            # Importar sob demanda para evitar dependências desnecessárias
+            from context_guide.mcp_server.server import run_server
+            
+            # Definir variáveis de ambiente para configuração
+            os.environ["CONTEXT_GUIDE_DOCS_DIR"] = args.docs_dir
+            os.environ["CONTEXT_GUIDE_DB_DIR"] = args.db_dir
+            
+            # Iniciar o servidor MCP
+            run_server(host=args.host, port=args.port, reload=args.reload)
+        except ImportError:
+            print("\n❌ Erro: Dependências para o servidor MCP não encontradas.")
+            print("Por favor, instale as dependências necessárias:")
+            print("pip install fastapi uvicorn requests pydantic")
+            sys.exit(1)
+        except Exception as e:
+            logger.error(f"Erro ao iniciar servidor MCP: {e}")
+            sys.exit(1)
+        return
+    
     # Criar instância do gerenciador de contexto
     try:
         context_manager = ContextManager(docs_dir=args.docs_dir, db_dir=args.db_dir)
@@ -257,23 +303,26 @@ def main():
         try:
             file_watcher.start()
             print("✅ Servidor iniciado com sucesso!")
-            print("📋 Use outro terminal para executar comandos 'generate' enquanto o servidor está rodando.")
-            print("🛑 Pressione Ctrl+C para interromper...")
+            print("\n🔄 Monitorando alterações em documentos markdown...")
+            print("⌨️  Pressione Ctrl+C para encerrar")
             
-            # Manter a thread principal viva
+            # Manter o programa rodando
             while True:
                 time.sleep(1)
+                
         except KeyboardInterrupt:
-            print("\n🛑 Encerrando servidor...")
-            file_watcher.stop()
-            print("✅ Servidor encerrado.")
+            print("\n🛑 Interrompido pelo usuário")
         except Exception as e:
             logger.error(f"Erro no servidor: {e}")
-            file_watcher.stop()
-            sys.exit(1)
+        finally:
+            # Garantir que o observador seja encerrado
+            if file_watcher:
+                file_watcher.stop()
+            print("👋 Servidor encerrado")
     
     elif args.command == "update":
-        print("🔄 Atualizando índice de documentos...")
+        print(f"📚 Atualizando índice para documentos em '{args.docs_dir}'...")
+        
         try:
             context_manager.update_index()
             print("✅ Índice atualizado com sucesso!")
@@ -282,16 +331,7 @@ def main():
             sys.exit(1)
     
     else:
-        # Se nenhum comando foi especificado, mostrar a ajuda
-        print("Por favor, especifique um comando. Use --help para obter ajuda.")
-        parser = argparse.ArgumentParser()
-        subparsers = parser.add_subparsers()
-        subparsers.add_parser("generate")
-        subparsers.add_parser("serve")
-        subparsers.add_parser("update")
-        subparsers.add_parser("init")
-        parser.print_help()
-        sys.exit(1)
-
+        print("Nenhum comando especificado. Use --help para ver as opções disponíveis.")
+        
 if __name__ == "__main__":
     main() 
